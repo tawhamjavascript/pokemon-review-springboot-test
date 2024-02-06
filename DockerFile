@@ -1,0 +1,10 @@
+FROM alpine:latest
+ARG home=/home/app
+RUN apk add --no-cache bash \
+    maven \
+    openjdk17-jdk \
+    --update util-linux
+
+RUN mkdir ${home}
+WORKDIR ${home}
+EXPOSE 8080

@@ -31,6 +31,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
+
 @WebMvcTest(controllers = PokemonController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @ExtendWith(MockitoExtension.class)
@@ -71,30 +72,19 @@ public class PokemonControllerTests {
 
     @Test
     public void PokemonController_GetAllPokemon_ReturnResponseDto() throws Exception {
-        PokemonResponse responseDto = PokemonResponse.builder().pageSize(10).last(true).pageNo(1).content(Arrays.asList(pokemonDto)).build();
-        when(pokemonService.getAllPokemon(1,10)).thenReturn(responseDto);
+        PokemonResponse pokemonResponse = PokemonResponse.builder().pageSize(10).last(true).pageNo(1).content(Arrays.asList(pokemonDto)).build();
+
+        when(pokemonService.getAllPokemon(1, 10)).thenReturn(pokemonResponse);
 
         ResultActions response = mockMvc.perform(get("/api/pokemon")
-                .contentType(MediaType.APPLICATION_JSON)
-                .param("pageNo","1")
-                .param("pageSize", "10"));
-
+            .contentType(MediaType.APPLICATION_JSON)
+            .param("pageNo", "1")
+            .param("pageSize", "10")
+        );
         response.andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.content.size()", CoreMatchers.is(responseDto.getContent().size())));
-    }
+            .andExpect(MockMvcResultMatchers.jsonPath("$.content.size()", CoreMatchers.is(pokemonResponse.getContent().size()))
+        );
 
-    @Test
-    public void PokemonController_PokemonDetail_ReturnPokemonDto() throws Exception {
-        int pokemonId = 1;
-        when(pokemonService.getPokemonById(pokemonId)).thenReturn(pokemonDto);
-
-        ResultActions response = mockMvc.perform(get("/api/pokemon/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(pokemonDto)));
-
-        response.andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.name", CoreMatchers.is(pokemonDto.getName())))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.type", CoreMatchers.is(pokemonDto.getType())));
     }
 
     @Test

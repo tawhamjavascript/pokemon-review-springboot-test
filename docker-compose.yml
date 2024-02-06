@@ -1,0 +1,39 @@
+version: '1.0'
+
+services:
+  postgres:
+    image: postgres:16.1-alpine3.19
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=pokemonapicourse
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    
+  pokemon-api:
+    stdin_open: true
+    build: .
+    ports:
+      - "8080:8080"
+
+    environment:
+      - datasourceURL=jdbc:postgresql://postgres:5432/pokemonapicourse
+      - datasourceUsername=postgres
+      - datasourcePassword=postgres
+
+    volumes:
+      - .:/home/app
+    
+    depends_on:
+      - postgres
+
+volumes:
+  postgres:
+
+
+    
+
